@@ -1,0 +1,35 @@
+-hosts: all
+ tasks:
+- name: Install latest version of NGINX
+	apt: 
+	name=NGINX
+	state=latest
+	- name: start NGINX
+	service:
+	name: nginx
+	state: started
+
+
+-name: copy NGINX config file and restart NGINX
+ copy:
+        src: /home/foo/static_site.cfg
+        dest: /etc/nginx/sites-available/static_site.cfg
+        become: yes
+
+-name: create symlink
+      	file:
+        src: /etc/nginx/sites-available/static_site.cfg
+        dest: /etc/nginx/sites-enabled/default
+        state: link
+      become: yes
+
+-name: copy the content of the web site
+      copy:
+        src: /home/foo/static-site-src/
+        dest: /home/foo/static-site
+
+- name: restart nginx
+      service:
+        name: nginx
+        state: restarted
+      become: yes
